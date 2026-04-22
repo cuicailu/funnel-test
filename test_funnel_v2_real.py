@@ -13,6 +13,15 @@ class TestFunnelAnalysisV2:
     def setup(self, page: Page):
         """前置条件：访问漏斗分析V2页面并等待加载完成"""
         page.goto(FUNNEL_V2_URL)
+
+        # 检测是否跳转到了登录页（登录态失效时会发生）
+        if "/login" in page.url or "/signin" in page.url:
+            raise AssertionError(
+                "❌ 登录态失效，请先运行 `python save_auth.py` 重新生成 auth.json，"
+                "然后再运行测试。"
+            )
+
+        # 等待漏斗V2页面核心元素加载完成
         page.wait_for_selector('.chart-column-barfunnel-filter', state='visible', timeout=15000)
         yield
 
